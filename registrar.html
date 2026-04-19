@@ -1,15 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Tarefa</title>
+</head>
 <body style="background:#111;color:white;font-family:sans-serif;padding:40px">
 
 <h2>Registrar Tarefa</h2>
 
 <form id="form">
   <input id="data" type="date"><br><br>
-  <input id="nome" placeholder="Nome"><br><br>
-  <input id="tarefa" placeholder="Tarefa"><br><br>
 
-  <select id="etapa">
+  <select id="nome" required>
+    <option value="">Selecione o membro</option>
+    <option>Isabella Greicy Silva</option>
+    <option>Bruna Stefani Rodrigues Souza</option>
+    <option>Danheni Gonçalves dos Santos</option>
+    <option>Caio Rodrigues</option>
+    <option>George de Almeida Neves</option>
+    <option>Lucas Kerkovsky Ronconi</option>
+    <option>Thalia Das Graças Oliveira</option>
+    <option>Wesley Junior</option>
+
+  </select><br><br>
+
+  <select id="etapa" required>
+    <option value="">Selecione a etapa</option>
     <option>Briefing</option>
     <option>Roteiro</option>
     <option>Produção</option>
@@ -17,7 +34,8 @@
     <option>Entrega</option>
   </select><br><br>
 
-  <input id="horas" type="number" placeholder="Horas"><br><br>
+  <input id="tarefa" placeholder="Tarefa"><br><br>
+  <input id="horas" type="number" step="0.5" placeholder="Horas"><br><br>
   <input id="observacoes" placeholder="Observações"><br><br>
 
   <button type="submit">Enviar</button>
@@ -26,27 +44,37 @@
 <p id="msg"></p>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQILUYT42rDhL0SqsZtn_1dUr2dNK1KgzyxlqotkW8p013WdjZ_EEpU3eOz_-YTrro/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVDe9FV8Br8a1yTXqRV-cSa2JI0wv2k4BNvZ4BRizhFnOx0YyA5R9X01-ynWQ-f1Gv/exec";
 
-document.getElementById("form").addEventListener("submit", async (e) => {
+document.getElementById("form").addEventListener("submit", async function(e) {
   e.preventDefault();
 
   const dados = {
     data: document.getElementById("data").value,
     nome: document.getElementById("nome").value,
-    tarefa: document.getElementById("tarefa").value,
     etapa: document.getElementById("etapa").value,
+    tarefa: document.getElementById("tarefa").value,
     horas: document.getElementById("horas").value,
     observacoes: document.getElementById("observacoes").value
   };
 
-  await fetch(SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify(dados)
-  });
+  try {
+    const resposta = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(dados)
+    });
 
-  document.getElementById("msg").innerText = "Enviado!";
-  document.getElementById("form").reset();
+    const resultado = await resposta.json();
+
+    if (resultado.success) {
+      document.getElementById("msg").innerText = "Enviado!";
+      document.getElementById("form").reset();
+    } else {
+      document.getElementById("msg").innerText = "Erro: " + resultado.error;
+    }
+  } catch (erro) {
+    document.getElementById("msg").innerText = "Erro de conexão.";
+  }
 });
 </script>
 
