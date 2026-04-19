@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Registrar Tarefa</h2>
+
+<form id="form">
+    <input id="data" placeholder="data"><br><br>
+  <input id="nome" placeholder="Nome"><br><br>
+  <input id="etapa" placeholder="etapa"><br><br>
+  <input id="tarefa" placeholder="Tarefa"><br><br>
+    <input id="horas" placeholder="horas"><br><br>
+      <input id="observacoes" placeholder="observacoes"><br><br>
+  <button type="submit">Enviar</button>
+</form>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpdwZcL8ABqehhPi4BvYkwrF95Ypv2yEyTJvX3rKms8Ss2X8-EzUsg3otYo99-3YD1/exec";
+
+document.getElementById("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      nome: document.getElementById("nome").value,
+      tarefa: document.getElementById("tarefa").value
+    })
+  });
+
+  alert("Enviado!");
+});
+</script>
+
+</body>
+</html>

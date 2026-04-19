@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Dashboard</h2>
+<ul id="lista"></ul>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpdwZcL8ABqehhPi4BvYkwrF95Ypv2yEyTJvX3rKms8Ss2X8-EzUsg3otYo99-3YD1/exec";
+
+async function carregar() {
+  const res = await fetch(SCRIPT_URL);
+  const dados = await res.json();
+
+  const lista = document.getElementById("lista");
+
+  dados.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = item.nome + " - " + item.tarefa;
+    lista.appendChild(li);
+  });
+}
+
+carregar();
+</script>
+
+</body>
+</html>
