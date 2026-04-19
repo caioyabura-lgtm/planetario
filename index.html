@@ -1,13 +1,96 @@
 <!DOCTYPE html>
-<html>
-<body style="background:#111;color:white;text-align:center;font-family:sans-serif">
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vision - Gestão</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<h1>Vision - Gestão</h1>
+    body {
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: black;
+      color: white;
+    }
 
-<br>
+    canvas {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
 
-<a href="registrar.html">📌 Registrar Tarefa</a><br><br>
-<a href="dashboard.html">📊 Dashboard</a>
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+      pointer-events: none;
+    }
 
+    .eye {
+      width: 180px;
+      max-width: 40vw;
+      margin-bottom: 30px;
+      pointer-events: none;
+    }
+
+    h1 {
+      margin-bottom: 12px;
+      font-size: 28px;
+      text-align: center;
+      text-shadow: 0 0 12px rgba(255,255,255,0.2);
+    }
+
+    p {
+      margin-bottom: 28px;
+      color: #cccccc;
+      text-align: center;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 14px;
+      pointer-events: auto;
+    }
+
+    a {
+      text-decoration: none;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.35);
+      padding: 12px 18px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+      transition: 0.2s;
+    }
+
+    a:hover {
+      background: rgba(255,255,255,0.12);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <img src="olho.png" alt="Olho" class="eye">
+    <h1>Vision Audiovisual</h1>
+    <p>Painel de gestão do projeto</p>
+
+    <div class="buttons">
+      <a href="registrar.html">Registrar tarefa</a>
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
 </body>
 </html>
