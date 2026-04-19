@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vision - Gestão</title>
+
   <style>
     * {
       margin: 0;
@@ -18,13 +19,6 @@
       color: white;
     }
 
-    canvas {
-      display: block;
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-    }
-
     .overlay {
       position: fixed;
       inset: 0;
@@ -33,55 +27,48 @@
       justify-content: center;
       align-items: center;
       z-index: 2;
-      pointer-events: none;
     }
 
     .eye {
-      width: 180px;
-      max-width: 40vw;
-      margin-bottom: 30px;
-      pointer-events: none;
+      width: 160px;
+      margin-bottom: 24px;
     }
 
     h1 {
-      margin-bottom: 12px;
-      font-size: 28px;
-      text-align: center;
-      text-shadow: 0 0 12px rgba(255,255,255,0.2);
+      font-size: 42px;
+      margin-bottom: 10px;
     }
 
     p {
-      margin-bottom: 28px;
-      color: #cccccc;
-      text-align: center;
+      color: #aaa;
+      margin-bottom: 30px;
     }
 
     .buttons {
       display: flex;
-      gap: 14px;
-      pointer-events: auto;
+      gap: 16px;
     }
 
     a {
       text-decoration: none;
       color: white;
-      border: 1px solid rgba(255,255,255,0.35);
-      padding: 12px 18px;
+      border: 1px solid #555;
+      padding: 12px 20px;
       border-radius: 10px;
-      background: rgba(0,0,0,0.35);
-      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.4);
       transition: 0.2s;
     }
 
     a:hover {
-      background: rgba(255,255,255,0.12);
-      transform: translateY(-2px);
+      background: rgba(255,255,255,0.1);
     }
   </style>
 </head>
+
 <body>
+
   <div class="overlay">
-    <img src="olho.png" alt="Olho" class="eye">
+    <img src="./olho.png" class="eye">
     <h1>Vision Audiovisual</h1>
     <p>Painel de gestão do projeto</p>
 
@@ -91,6 +78,7 @@
     </div>
   </div>
 
-  <script type="module" src="main.js"></script>
+  <script src="main.js"></script>
+
 </body>
 </html>

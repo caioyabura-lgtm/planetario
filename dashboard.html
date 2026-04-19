@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
-<body style="background:#111;color:white;font-family:sans-serif">
+<body style="background:#111;color:white;font-family:sans-serif;padding:40px">
 
 <h2>Dashboard</h2>
 
-<h3>Resumo</h3>
 <div id="resumo"></div>
-
-<h3>Tarefas</h3>
+<hr>
 <ul id="lista"></ul>
 
 <script>
@@ -20,15 +18,12 @@ async function carregar() {
   const lista = document.getElementById("lista");
   const resumo = document.getElementById("resumo");
 
-  lista.innerHTML = "";
-  resumo.innerHTML = "";
-
   let porPessoa = {};
   let totalHoras = 0;
 
   dados.forEach(item => {
-    const li = document.createElement("li");
 
+    const li = document.createElement("li");
     li.textContent =
       item.nome + " | " +
       item.tarefa + " | " +
@@ -37,7 +32,6 @@ async function carregar() {
 
     lista.appendChild(li);
 
-    // cálculo
     const nome = item.nome || "Sem nome";
     const horas = parseFloat(item.horas) || 0;
 
@@ -50,20 +44,15 @@ async function carregar() {
     totalHoras += horas;
   });
 
-  // resumo por pessoa
   Object.keys(porPessoa).forEach(nome => {
     const p = porPessoa[nome];
-
     const div = document.createElement("div");
     div.innerHTML = `<b>${nome}</b>: ${p.tarefas} tarefas / ${p.horas}h`;
-
     resumo.appendChild(div);
   });
 
-  // total geral
   const total = document.createElement("div");
   total.innerHTML = `<br><b>Total:</b> ${dados.length} tarefas / ${totalHoras}h`;
-
   resumo.appendChild(total);
 }
 
