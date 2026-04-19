@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<body style="background:#111;color:white;font-family:sans-serif">
+
+<h2>Registrar Tarefa</h2>
+
+<form id="form">
+  <input id="data" type="date"><br><br>
+  <input id="nome" placeholder="Nome"><br><br>
+  <input id="tarefa" placeholder="Tarefa"><br><br>
+
+  <select id="etapa">
+    <option>Briefing</option>
+    <option>Roteiro</option>
+    <option>Produção</option>
+    <option>Pós</option>
+    <option>Entrega</option>
+  </select><br><br>
+
+  <input id="horas" type="number" placeholder="Horas"><br><br>
+  <input id="observacoes" placeholder="Observações"><br><br>
+
+  <button type="submit">Enviar</button>
+</form>
+
+<p id="msg"></p>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQILUYT42rDhL0SqsZtn_1dUr2dNK1KgzyxlqotkW8p013WdjZ_EEpU3eOz_-YTrro/exec";
+
+document.getElementById("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const dados = {
+    data: document.getElementById("data").value,
+    nome: document.getElementById("nome").value,
+    tarefa: document.getElementById("tarefa").value,
+    etapa: document.getElementById("etapa").value,
+    horas: document.getElementById("horas").value,
+    observacoes: document.getElementById("observacoes").value
+  };
+
+  await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(dados)
+  });
+
+  document.getElementById("msg").innerText = "Enviado!";
+  document.getElementById("form").reset();
+});
+</script>
+
+<br><a href="index.html">Voltar</a>
+
+</body>
+</html>

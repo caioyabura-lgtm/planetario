@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<body style="background:#111;color:white;font-family:sans-serif">
+
+<h2>Dashboard</h2>
+
+<h3>Resumo</h3>
+<div id="resumo"></div>
+
+<h3>Tarefas</h3>
+<ul id="lista"></ul>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQILUYT42rDhL0SqsZtn_1dUr2dNK1KgzyxlqotkW8p013WdjZ_EEpU3eOz_-YTrro/exec";
+
+async function carregar() {
+  const res = await fetch(SCRIPT_URL);
+  const dados = await res.json();
+
+  const lista = document.getElementById("lista");
+  const resumo = document.getElementById("resumo");
+
+  lista.innerHTML = "";
+  resumo.innerHTML = "";
+
+  let porPessoa = {};
+  let totalHoras = 0;
+
+  dados.forEach(item => {
+    const li = document.createElement("li");
+
+    li.textContent =
+      item.nome + " | " +
+      item.tarefa + " | " +
+      item.etapa + " | " +
+      (item.horas || 0) + "h";
+
+    lista.appendChild(li);
+
+    // cálculo
+    const nome = item.nome || "Sem nome";
+    const horas = parseFloat(item.horas) || 0;
+
+    if (!porPessoa[nome]) {
+      porPessoa[nome] = { tarefas: 0, horas: 0 };
+    }
+
+    porPessoa[nome].tarefas++;
+    porPessoa[nome].horas += horas;
+    totalHoras += horas;
+  });
+
+  // resumo por pessoa
+  Object.keys(porPessoa).forEach(nome => {
+    const p = porPessoa[nome];
+
+    const div = document.createElement("div");
+    div.innerHTML = `<b>${nome}</b>: ${p.tarefas} tarefas / ${p.horas}h`;
+
+    resumo.appendChild(div);
+  });
+
+  // total geral
+  const total = document.createElement("div");
+  total.innerHTML = `<br><b>Total:</b> ${dados.length} tarefas / ${totalHoras}h`;
+
+  resumo.appendChild(total);
+}
+
+carregar();
+</script>
+
+<br><a href="index.html">Voltar</a>
+
+</body>
+</html>
