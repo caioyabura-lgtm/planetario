@@ -4,74 +4,379 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
-</head>
-<body style="background:#111;color:white;font-family:sans-serif;padding:40px">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-<h2>Dashboard</h2>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0b0f;
+      color: white;
+      padding: 32px 20px;
+    }
 
-<div id="resumo"></div>
-<hr>
-<ul id="lista"></ul>
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVDe9FV8Br8a1yTXqRV-cSa2JI0wv2k4BNvZ4BRizhFnOx0YyA5R9X01-ynWQ-f1Gv/exec";
+    h1 {
+      margin-top: 0;
+      margin-bottom: 24px;
+      font-size: 32px;
+    }
 
-async function carregar() {
-  try {
-    const res = await fetch(SCRIPT_URL);
-    const dados = await res.json();
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
 
-    const lista = document.getElementById("lista");
-    const resumo = document.getElementById("resumo");
+    .card {
+      background: #17171d;
+      border: 1px solid #2b2b35;
+      border-radius: 14px;
+      padding: 18px;
+    }
 
-    lista.innerHTML = "";
-    resumo.innerHTML = "";
+    .card h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      color: #bdbdc7;
+      font-weight: normal;
+    }
 
-    let porPessoa = {};
-    let totalHoras = 0;
+    .card p {
+      margin: 0;
+      font-size: 28px;
+      font-weight: bold;
+    }
 
-    dados.forEach(function(item) {
-      const li = document.createElement("li");
-      li.textContent =
-        (item.nome || "") + " | " +
-        (item.etapa || "") + " | " +
-        (item.tarefa || "") + " | " +
-        (item.horas || 0) + "h";
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
 
-      lista.appendChild(li);
+    .panel {
+      background: #17171d;
+      border: 1px solid #2b2b35;
+      border-radius: 14px;
+      padding: 18px;
+    }
 
-      const nome = item.nome || "Sem nome";
-      const horas = parseFloat(item.horas) || 0;
+    .panel h2 {
+      margin-top: 0;
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
 
-      if (!porPessoa[nome]) {
-        porPessoa[nome] = { tarefas: 0, horas: 0 };
+    .tabela-wrap {
+      background: #17171d;
+      border: 1px solid #2b2b35;
+      border-radius: 14px;
+      padding: 18px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #2b2b35;
+      text-align: left;
+    }
+
+    th {
+      color: #bdbdc7;
+      font-weight: normal;
+    }
+
+    tr:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .topbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    select, input {
+      background: #17171d;
+      color: white;
+      border: 1px solid #2b2b35;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    a {
+      color: #d3d3db;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
       }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Dashboard da Equipe</h1>
 
-      porPessoa[nome].tarefas += 1;
-      porPessoa[nome].horas += horas;
-      totalHoras += horas;
-    });
+    <div class="topbar">
+      <select id="filtroEtapa">
+        <option value="">Todas as etapas</option>
+        <option value="Briefing">Briefing</option>
+        <option value="Roteiro">Roteiro</option>
+        <option value="Produção">Produção</option>
+        <option value="Pós">Pós</option>
+        <option value="Entrega">Entrega</option>
+      </select>
 
-    Object.keys(porPessoa).forEach(function(nome) {
-      const p = porPessoa[nome];
-      const div = document.createElement("div");
-      div.innerHTML = "<b>" + nome + "</b>: " + p.tarefas + " tarefas / " + p.horas + "h";
-      resumo.appendChild(div);
-    });
+      <input type="text" id="filtroNome" placeholder="Filtrar por nome">
+    </div>
 
-    const total = document.createElement("div");
-    total.innerHTML = "<br><b>Total:</b> " + dados.length + " tarefas / " + totalHoras + "h";
-    resumo.appendChild(total);
+    <div class="cards">
+      <div class="card">
+        <h3>Total de tarefas</h3>
+        <p id="totalTarefas">0</p>
+      </div>
+      <div class="card">
+        <h3>Horas totais</h3>
+        <p id="totalHoras">0</p>
+      </div>
+      <div class="card">
+        <h3>Membros ativos</h3>
+        <p id="totalPessoas">0</p>
+      </div>
+      <div class="card">
+        <h3>Etapa mais usada</h3>
+        <p id="etapaMaisUsada">-</p>
+      </div>
+    </div>
 
-  } catch (erro) {
-    document.getElementById("resumo").innerText = "Erro ao carregar dashboard.";
-  }
-}
+    <div class="grid">
+      <div class="panel">
+        <h2>Tarefas por pessoa</h2>
+        <canvas id="graficoTarefas"></canvas>
+      </div>
 
-carregar();
-</script>
+      <div class="panel">
+        <h2>Horas por pessoa</h2>
+        <canvas id="graficoHoras"></canvas>
+      </div>
+    </div>
 
-<br><a href="index.html">Voltar</a>
+    <div class="tabela-wrap">
+      <h2 style="margin-top:0;">Tarefas registradas</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Nome</th>
+            <th>Etapa</th>
+            <th>Tarefa</th>
+            <th>Horas</th>
+            <th>Observações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaBody"></tbody>
+      </table>
+    </div>
 
+    <a href="index.html">← Voltar</a>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVDe9FV8Br8a1yTXqRV-cSa2JI0wv2k4BNvZ4BRizhFnOx0YyA5R9X01-ynWQ-f1Gv/exec";
+
+    let graficoTarefas;
+    let graficoHoras;
+    let dadosOriginais = [];
+
+    async function carregarDados() {
+      try {
+        const resposta = await fetch(SCRIPT_URL);
+        const dados = await resposta.json();
+
+        if (!Array.isArray(dados)) {
+          throw new Error("Resposta inválida");
+        }
+
+        dadosOriginais = dados;
+        aplicarFiltros();
+      } catch (erro) {
+        console.error(erro);
+        document.getElementById("tabelaBody").innerHTML =
+          '<tr><td colspan="6">Erro ao carregar os dados.</td></tr>';
+      }
+    }
+
+    function aplicarFiltros() {
+      const etapaFiltro = document.getElementById("filtroEtapa").value.trim().toLowerCase();
+      const nomeFiltro = document.getElementById("filtroNome").value.trim().toLowerCase();
+
+      const dadosFiltrados = dadosOriginais.filter(item => {
+        const etapa = String(item.etapa || "").toLowerCase();
+        const nome = String(item.nome || "").toLowerCase();
+
+        const okEtapa = !etapaFiltro || etapa === etapaFiltro;
+        const okNome = !nomeFiltro || nome.includes(nomeFiltro);
+
+        return okEtapa && okNome;
+      });
+
+      renderizarDashboard(dadosFiltrados);
+    }
+
+    function renderizarDashboard(dados) {
+      const tabelaBody = document.getElementById("tabelaBody");
+      tabelaBody.innerHTML = "";
+
+      const porPessoa = {};
+      const porEtapa = {};
+      let totalHoras = 0;
+
+      dados.forEach(item => {
+        const nome = item.nome || "Sem nome";
+        const etapa = item.etapa || "Sem etapa";
+        const horas = parseFloat(item.horas) || 0;
+
+        if (!porPessoa[nome]) {
+          porPessoa[nome] = { tarefas: 0, horas: 0 };
+        }
+
+        if (!porEtapa[etapa]) {
+          porEtapa[etapa] = 0;
+        }
+
+        porPessoa[nome].tarefas += 1;
+        porPessoa[nome].horas += horas;
+        porEtapa[etapa] += 1;
+        totalHoras += horas;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.data || ""}</td>
+          <td>${item.nome || ""}</td>
+          <td>${item.etapa || ""}</td>
+          <td>${item.tarefa || ""}</td>
+          <td>${item.horas || ""}</td>
+          <td>${item.observacoes || ""}</td>
+        `;
+        tabelaBody.appendChild(tr);
+      });
+
+      document.getElementById("totalTarefas").textContent = dados.length;
+      document.getElementById("totalHoras").textContent = totalHoras;
+      document.getElementById("totalPessoas").textContent = Object.keys(porPessoa).length;
+      document.getElementById("etapaMaisUsada").textContent = obterEtapaMaisUsada(porEtapa);
+
+      criarOuAtualizarGraficos(porPessoa);
+    }
+
+    function obterEtapaMaisUsada(porEtapa) {
+      let maiorEtapa = "-";
+      let maiorValor = 0;
+
+      Object.keys(porEtapa).forEach(etapa => {
+        if (porEtapa[etapa] > maiorValor) {
+          maiorValor = porEtapa[etapa];
+          maiorEtapa = etapa;
+        }
+      });
+
+      return maiorEtapa;
+    }
+
+    function criarOuAtualizarGraficos(porPessoa) {
+      const nomes = Object.keys(porPessoa);
+      const tarefas = nomes.map(nome => porPessoa[nome].tarefas);
+      const horas = nomes.map(nome => porPessoa[nome].horas);
+
+      if (graficoTarefas) graficoTarefas.destroy();
+      if (graficoHoras) graficoHoras.destroy();
+
+      graficoTarefas = new Chart(document.getElementById("graficoTarefas"), {
+        type: "bar",
+        data: {
+          labels: nomes,
+          datasets: [{
+            label: "Tarefas",
+            data: tarefas
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: { color: "white" }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: "white" },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: { color: "white" },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            }
+          }
+        }
+      });
+
+      graficoHoras = new Chart(document.getElementById("graficoHoras"), {
+        type: "bar",
+        data: {
+          labels: nomes,
+          datasets: [{
+            label: "Horas",
+            data: horas
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: { color: "white" }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: "white" },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: { color: "white" },
+              grid: { color: "rgba(255,255,255,0.08)" }
+            }
+          }
+        }
+      });
+    }
+
+    document.getElementById("filtroEtapa").addEventListener("change", aplicarFiltros);
+    document.getElementById("filtroNome").addEventListener("input", aplicarFiltros);
+
+    carregarDados();
+  </script>
 </body>
 </html>

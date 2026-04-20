@@ -69,7 +69,13 @@ function drawStars() {
     if (star.a > 1) star.a = 1;
 
     ctx.beginPath();
-    ctx.arc(star.x + offsetX * star.s * 10, star.y + offsetY * star.s * 10, star.r, 0, Math.PI * 2);
+    ctx.arc(
+      star.x + offsetX * star.s * 10,
+      star.y + offsetY * star.s * 10,
+      star.r,
+      0,
+      Math.PI * 2
+    );
     ctx.fillStyle = `rgba(255,255,255,${star.a})`;
     ctx.fill();
   }

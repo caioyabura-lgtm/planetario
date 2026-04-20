@@ -4,81 +4,387 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registrar Tarefa</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0c1919;
+      color: white;
+      min-height: 100vh;
+      padding: 32px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 460px;
+      background: #1a4648;
+      border: 1px solid #1d7276;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 0 25px rgba(29, 202, 162, 0.12);
+    }
+
+    .manual-wrap {
+      position: relative;
+      width: 100%;
+      margin-bottom: 20px;
+      cursor: zoom-in;
+    }
+
+    .manual {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      border: 1px solid #1d7276;
+      box-shadow: 0 0 25px rgba(29, 202, 162, 0.15);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      transform-origin: center center;
+    }
+
+    .manual-wrap:hover .manual {
+      transform: scale(1.03);
+      box-shadow: 0 0 35px rgba(29, 225, 234, 0.22);
+    }
+
+    .manual-wrap.active .manual {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(29, 225, 234, 0.28);
+    }
+
+    h2 {
+      margin: 0 0 18px 0;
+      font-size: 28px;
+      color: #ffffff;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    input,
+    select,
+    button {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    input,
+    select {
+      border: 1px solid #1d7276;
+      background: #0c1919;
+      color: #ffffff;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #b7c9c9;
+    }
+
+    select:invalid {
+      color: #b7c9c9;
+    }
+
+    button {
+      border: none;
+      background: #1de1ea;
+      color: #0c1919;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .msg {
+      margin-top: 14px;
+      min-height: 20px;
+      color: #1de1ea;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 16px;
+      color: #d7eeee;
+      text-decoration: none;
+    }
+
+    .back:hover {
+      text-decoration: underline;
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 10, 10, 0.92);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 9999;
+      cursor: zoom-out;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox img {
+      max-width: min(100%, 1100px);
+      max-height: 92vh;
+      width: auto;
+      height: auto;
+      border-radius: 14px;
+      border: 1px solid #1d7276;
+      box-shadow: 0 0 50px rgba(29, 225, 234, 0.22);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 16px 10px;
+      }
+
+      .container {
+        padding: 16px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
-<body style="background:#111;color:white;font-family:sans-serif;padding:40px">
+<body>
 
-<h2>Registrar Tarefa</h2>
+  <div class="container">
+    <div class="manual-wrap" id="manualWrap">
+      <img src="./manual.png" alt="Manual de uso" class="manual" id="manualImg">
+    </div>
 
-<form id="form">
-  <input id="data" type="date"><br><br>
+    <h2>Registrar Tarefa</h2>
 
-  <select id="nome" required>
-    <option value="">Selecione o membro</option>
-    <option>Isabella Greicy Silva</option>
-    <option>Bruna Stefani Rodrigues Souza</option>
-    <option>Danheni Gonçalves dos Santos</option>
-    <option>Caio Rodrigues</option>
-    <option>George de Almeida Neves</option>
-    <option>Lucas Kerkovsky Ronconi</option>
-    <option>Thalia Das Graças Oliveira</option>
-    <option>Wesley Junior</option>
+    <form id="form">
+      <input id="data" type="date">
 
-  </select><br><br>
+      <select id="nome" required>
+        <option value="" disabled selected>Integrante</option>
+        <option>Isabella Greicy Silva</option>
+        <option>Bruna Stefani Rodrigues Souza</option>
+        <option>Danheni Gonçalves dos Santos</option>
+        <option>Caio Rodrigues</option>
+        <option>George de Almeida Neves</option>
+        <option>Lucas Kerkovsky Ronconi</option>
+        <option>Thalia Das Graças Oliveira</option>
+        <option>Wesley Junior</option>
+      </select>
 
-  <select id="etapa" required>
-    <option value="">Selecione a etapa</option>
-    <option>Briefing</option>
-    <option>Roteiro</option>
-    <option>Produção</option>
-    <option>Pós</option>
-    <option>Entrega</option>
-  </select><br><br>
+      <select id="etapa" required>
+        <option value="" disabled selected>Etapa</option>
+        <option value="Briefing">Briefing</option>
+        <option value="Roteiro">Roteiro</option>
+        <option value="Produção">Produção</option>
+        <option value="Pós">Pós</option>
+        <option value="Entrega">Entrega</option>
+      </select>
 
-  <input id="tarefa" placeholder="Tarefa"><br><br>
-  <input id="horas" type="number" step="0.5" placeholder="Horas"><br><br>
-  <input id="observacoes" placeholder="Observações"><br><br>
+      <select id="tarefa" required>
+        <option value="" disabled selected>Tarefa</option>
+      </select>
 
-  <button type="submit">Enviar</button>
-</form>
+      <input id="horas" type="number" step="0.5" min="0" placeholder="Horas">
+      <input id="observacoes" type="text" placeholder="Observações">
 
-<p id="msg"></p>
+      <button type="submit">Registrar</button>
+    </form>
 
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVDe9FV8Br8a1yTXqRV-cSa2JI0wv2k4BNvZ4BRizhFnOx0YyA5R9X01-ynWQ-f1Gv/exec";
+    <p class="msg" id="msg"></p>
 
-document.getElementById("form").addEventListener("submit", async function(e) {
-  e.preventDefault();
+    <a href="./index.html" class="back">← Voltar</a>
+  </div>
 
-  const dados = {
-    data: document.getElementById("data").value,
-    nome: document.getElementById("nome").value,
-    etapa: document.getElementById("etapa").value,
-    tarefa: document.getElementById("tarefa").value,
-    horas: document.getElementById("horas").value,
-    observacoes: document.getElementById("observacoes").value
-  };
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Fechar">×</button>
+    <img src="./manual.png" alt="Manual ampliado">
+  </div>
 
-  try {
-    const resposta = await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(dados)
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVDe9FV8Br8a1yTXqRV-cSa2JI0wv2k4BNvZ4BRizhFnOx0YyA5R9X01-ynWQ-f1Gv/exec";
+
+    const tarefasPorEtapa = {
+      "Briefing": [
+        "Reunião com cliente",
+        "Levantamento de necessidades",
+        "Definição de escopo",
+        "Pesquisa de referências",
+        "Alinhamento interno"
+      ],
+      "Roteiro": [
+        "Redação de roteiro",
+        "Revisão de roteiro",
+        "Storyboard",
+        "Planejamento técnico",
+        "Aprovação criativa"
+      ],
+      "Produção": [
+        "Captação de imagem",
+        "Captação de áudio",
+        "Direção",
+        "Produção de set",
+        "Organização de equipe",
+        "Montagem de equipamentos",
+        "Registro fotográfico"
+      ],
+      "Pós": [
+        "Edição de vídeo",
+        "Edição de áudio",
+        "Design de som",
+        "Correção de cor",
+        "Inserção de legendas",
+        "Exportação de versão",
+        "Revisão final"
+      ],
+      "Entrega": [
+        "Envio ao cliente",
+        "Apresentação da entrega",
+        "Ajustes solicitados",
+        "Finalização de arquivos",
+        "Arquivamento",
+        "Documentação do projeto"
+      ]
+    };
+
+    const etapaSelect = document.getElementById("etapa");
+    const tarefaSelect = document.getElementById("tarefa");
+    const form = document.getElementById("form");
+    const msg = document.getElementById("msg");
+    const dataInput = document.getElementById("data");
+
+    const manualWrap = document.getElementById("manualWrap");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxClose = document.getElementById("lightboxClose");
+
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoje.getDate()).padStart(2, "0");
+    dataInput.value = `${ano}-${mes}-${dia}`;
+
+    etapaSelect.addEventListener("change", function () {
+      const etapa = etapaSelect.value;
+      tarefaSelect.innerHTML = '<option value="" disabled selected>Tarefa</option>';
+
+      if (tarefasPorEtapa[etapa]) {
+        tarefasPorEtapa[etapa].forEach(function (tarefa) {
+          const option = document.createElement("option");
+          option.value = tarefa;
+          option.textContent = tarefa;
+          tarefaSelect.appendChild(option);
+        });
+      }
     });
 
-    const resultado = await resposta.json();
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-    if (resultado.success) {
-      document.getElementById("msg").innerText = "Enviado!";
-      document.getElementById("form").reset();
-    } else {
-      document.getElementById("msg").innerText = "Erro: " + resultado.error;
+      const dados = {
+        data: document.getElementById("data").value,
+        nome: document.getElementById("nome").value,
+        etapa: document.getElementById("etapa").value,
+        tarefa: document.getElementById("tarefa").value,
+        horas: document.getElementById("horas").value,
+        observacoes: document.getElementById("observacoes").value
+      };
+
+      msg.innerText = "Enviando...";
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify(dados)
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          msg.innerText = "Tarefa registrada com sucesso.";
+          form.reset();
+          dataInput.value = `${ano}-${mes}-${dia}`;
+          tarefaSelect.innerHTML = '<option value="" disabled selected>Tarefa</option>';
+        } else {
+          msg.innerText = "Erro: " + (result.error || "falha no envio");
+        }
+      } catch (err) {
+        msg.innerText = "Erro de conexão.";
+      }
+    });
+
+    function openLightbox() {
+      lightbox.classList.add("open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      manualWrap.classList.add("active");
     }
-  } catch (erro) {
-    document.getElementById("msg").innerText = "Erro de conexão.";
-  }
-});
-</script>
 
-<br><a href="index.html">Voltar</a>
+    function closeLightbox() {
+      lightbox.classList.remove("open");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      manualWrap.classList.remove("active");
+    }
+
+    manualWrap.addEventListener("click", openLightbox);
+
+    manualWrap.addEventListener("touchstart", function () {
+      manualWrap.classList.add("active");
+    }, { passive: true });
+
+    manualWrap.addEventListener("touchend", function () {
+      setTimeout(() => {
+        manualWrap.classList.remove("active");
+      }, 180);
+    }, { passive: true });
+
+    lightbox.addEventListener("click", function (e) {
+      if (e.target === lightbox || e.target === lightboxClose) {
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        closeLightbox();
+      }
+    });
+  </script>
 
 </body>
 </html>

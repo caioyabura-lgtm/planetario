@@ -27,11 +27,14 @@
       justify-content: center;
       align-items: center;
       z-index: 2;
+      padding: 20px;
+      text-align: center;
     }
 
     .eye {
       width: 350px;
-      margin-bottom: 52,5px;
+      max-width: 72vw;
+      margin-bottom: 52.5px;
     }
 
     h1 {
@@ -47,6 +50,8 @@
     .buttons {
       display: flex;
       gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     a {
@@ -66,19 +71,17 @@
 </head>
 
 <body>
-
   <div class="overlay">
-    <img src="./olho.png" class="eye">
+    <img src="./olho.png" class="eye" alt="Olho">
     <h1>Vision Audiovisual</h1>
     <p>Painel de gestão do projeto</p>
 
     <div class="buttons">
-      <a href="registrar.html">Registrar tarefa</a>
-      <a href="dashboard.html">Dashboard</a>
+      <a href="./registrar.html">Registrar tarefa</a>
+      <a href="./dashboard.html">Dashboard</a>
     </div>
   </div>
 
-  <script src="main.js"></script>
-
+  <script src="./main.js"></script>
 </body>
 </html>
