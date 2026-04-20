@@ -6,9 +6,7 @@
   <title>Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -21,6 +19,30 @@
     .container {
       max-width: 1200px;
       margin: 0 auto;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      text-decoration: none;
+      color: white;
+      border: 1px solid #555;
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.4);
+      transition: 0.2s;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: rgba(255,255,255,0.1);
     }
 
     h1 {
@@ -56,9 +78,31 @@
       font-weight: bold;
     }
 
-    .grid {
+    .topbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    select, input {
+      background: #17171d;
+      color: white;
+      border: 1px solid #2b2b35;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .grid2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 16px;
       margin-bottom: 24px;
     }
@@ -68,12 +112,18 @@
       border: 1px solid #2b2b35;
       border-radius: 14px;
       padding: 18px;
+      min-height: 320px;
     }
 
     .panel h2 {
       margin-top: 0;
       font-size: 18px;
       margin-bottom: 16px;
+    }
+
+    .chart-box {
+      position: relative;
+      height: 240px;
     }
 
     .tabela-wrap {
@@ -105,37 +155,58 @@
       background: rgba(255,255,255,0.03);
     }
 
-    .topbar {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    select, input {
-      background: #17171d;
-      color: white;
-      border: 1px solid #2b2b35;
-      border-radius: 10px;
-      padding: 10px 12px;
-    }
-
-    a {
+    .back-link {
       color: #d3d3db;
       text-decoration: none;
       display: inline-block;
       margin-top: 20px;
     }
 
-    @media (max-width: 900px) {
-      .grid {
+    @media (max-width: 1100px) {
+      .grid3 {
         grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .grid2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      .top-actions,
+      .topbar,
+      .back-link {
+        display: none !important;
+      }
+
+      body {
+        background: white;
+        color: black;
+      }
+
+      .card, .panel, .tabela-wrap {
+        border: 1px solid #ccc;
+        background: white;
+        color: black;
+      }
+
+      th, td {
+        border-bottom: 1px solid #ccc;
+        color: black;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
+
+    <div class="top-actions">
+      <a href="entrega.html" class="btn">Entregas</a>
+      <button onclick="window.print()" class="btn">Imprimir</button>
+    </div>
+
     <h1>Dashboard da Equipe</h1>
 
     <div class="topbar">
@@ -170,15 +241,42 @@
       </div>
     </div>
 
-    <div class="grid">
+    <div class="grid2">
       <div class="panel">
         <h2>Tarefas por pessoa</h2>
-        <canvas id="graficoTarefas"></canvas>
+        <div class="chart-box">
+          <canvas id="graficoTarefas"></canvas>
+        </div>
       </div>
 
       <div class="panel">
         <h2>Horas por pessoa</h2>
-        <canvas id="graficoHoras"></canvas>
+        <div class="chart-box">
+          <canvas id="graficoHoras"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="panel">
+        <h2>Tarefas por etapa</h2>
+        <div class="chart-box">
+          <canvas id="graficoEtapas"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Top 5 tarefas</h2>
+        <div class="chart-box">
+          <canvas id="graficoTopTarefas"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Horas por etapa</h2>
+        <div class="chart-box">
+          <canvas id="graficoHorasEtapa"></canvas>
+        </div>
       </div>
     </div>
 
@@ -199,7 +297,7 @@
       </table>
     </div>
 
-    <a href="index.html">← Voltar</a>
+    <a href="index.html" class="back-link">← Voltar</a>
   </div>
 
   <script>
@@ -207,6 +305,9 @@
 
     let graficoTarefas;
     let graficoHoras;
+    let graficoEtapas;
+    let graficoTopTarefas;
+    let graficoHorasEtapa;
     let dadosOriginais = [];
 
     async function carregarDados() {
@@ -214,9 +315,7 @@
         const resposta = await fetch(SCRIPT_URL);
         const dados = await resposta.json();
 
-        if (!Array.isArray(dados)) {
-          throw new Error("Resposta inválida");
-        }
+        if (!Array.isArray(dados)) throw new Error("Resposta inválida");
 
         dadosOriginais = dados;
         aplicarFiltros();
@@ -248,26 +347,24 @@
       const tabelaBody = document.getElementById("tabelaBody");
       tabelaBody.innerHTML = "";
 
-      const porPessoa = {};
+      const porPessoaTarefas = {};
+      const porPessoaHoras = {};
       const porEtapa = {};
+      const porTarefa = {};
+      const horasPorEtapa = {};
       let totalHoras = 0;
 
       dados.forEach(item => {
         const nome = item.nome || "Sem nome";
         const etapa = item.etapa || "Sem etapa";
+        const tarefa = item.tarefa || "Sem tarefa";
         const horas = parseFloat(item.horas) || 0;
 
-        if (!porPessoa[nome]) {
-          porPessoa[nome] = { tarefas: 0, horas: 0 };
-        }
-
-        if (!porEtapa[etapa]) {
-          porEtapa[etapa] = 0;
-        }
-
-        porPessoa[nome].tarefas += 1;
-        porPessoa[nome].horas += horas;
-        porEtapa[etapa] += 1;
+        porPessoaTarefas[nome] = (porPessoaTarefas[nome] || 0) + 1;
+        porPessoaHoras[nome] = (porPessoaHoras[nome] || 0) + horas;
+        porEtapa[etapa] = (porEtapa[etapa] || 0) + 1;
+        porTarefa[tarefa] = (porTarefa[tarefa] || 0) + 1;
+        horasPorEtapa[etapa] = (horasPorEtapa[etapa] || 0) + horas;
         totalHoras += horas;
 
         const tr = document.createElement("tr");
@@ -283,94 +380,120 @@
       });
 
       document.getElementById("totalTarefas").textContent = dados.length;
-      document.getElementById("totalHoras").textContent = totalHoras;
-      document.getElementById("totalPessoas").textContent = Object.keys(porPessoa).length;
-      document.getElementById("etapaMaisUsada").textContent = obterEtapaMaisUsada(porEtapa);
+      document.getElementById("totalHoras").textContent = totalHoras.toFixed(2);
+      document.getElementById("totalPessoas").textContent = Object.keys(porPessoaTarefas).length;
+      document.getElementById("etapaMaisUsada").textContent = obterMaisUsado(porEtapa);
 
-      criarOuAtualizarGraficos(porPessoa);
+      criarOuAtualizarGraficos(
+        porPessoaTarefas,
+        porPessoaHoras,
+        porEtapa,
+        porTarefa,
+        horasPorEtapa
+      );
     }
 
-    function obterEtapaMaisUsada(porEtapa) {
-      let maiorEtapa = "-";
-      let maiorValor = 0;
+    function obterMaisUsado(obj) {
+      let maior = "-";
+      let valor = 0;
 
-      Object.keys(porEtapa).forEach(etapa => {
-        if (porEtapa[etapa] > maiorValor) {
-          maiorValor = porEtapa[etapa];
-          maiorEtapa = etapa;
+      Object.keys(obj).forEach(chave => {
+        if (obj[chave] > valor) {
+          valor = obj[chave];
+          maior = chave;
         }
       });
 
-      return maiorEtapa;
+      return maior;
     }
 
-    function criarOuAtualizarGraficos(porPessoa) {
-      const nomes = Object.keys(porPessoa);
-      const tarefas = nomes.map(nome => porPessoa[nome].tarefas);
-      const horas = nomes.map(nome => porPessoa[nome].horas);
+    function criarOuAtualizarGraficos(porPessoaTarefas, porPessoaHoras, porEtapa, porTarefa, horasPorEtapa) {
+      const nomes = Object.keys(porPessoaTarefas);
+      const tarefasPessoa = nomes.map(nome => porPessoaTarefas[nome]);
+      const horasPessoa = nomes.map(nome => porPessoaHoras[nome]);
+
+      const etapas = Object.keys(porEtapa);
+      const tarefasEtapa = etapas.map(etapa => porEtapa[etapa]);
+      const horasEtapa = etapas.map(etapa => horasPorEtapa[etapa]);
+
+      const topTarefas = Object.entries(porTarefa)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+
+      const topLabels = topTarefas.map(item => item[0]);
+      const topValores = topTarefas.map(item => item[1]);
 
       if (graficoTarefas) graficoTarefas.destroy();
       if (graficoHoras) graficoHoras.destroy();
+      if (graficoEtapas) graficoEtapas.destroy();
+      if (graficoTopTarefas) graficoTopTarefas.destroy();
+      if (graficoHorasEtapa) graficoHorasEtapa.destroy();
 
       graficoTarefas = new Chart(document.getElementById("graficoTarefas"), {
         type: "bar",
         data: {
           labels: nomes,
-          datasets: [{
-            label: "Tarefas",
-            data: tarefas
-          }]
+          datasets: [{ label: "Tarefas", data: tarefasPessoa }]
         },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              labels: { color: "white" }
-            }
-          },
-          scales: {
-            x: {
-              ticks: { color: "white" },
-              grid: { color: "rgba(255,255,255,0.08)" }
-            },
-            y: {
-              beginAtZero: true,
-              ticks: { color: "white" },
-              grid: { color: "rgba(255,255,255,0.08)" }
-            }
-          }
-        }
+        options: getBarOptions()
       });
 
       graficoHoras = new Chart(document.getElementById("graficoHoras"), {
         type: "bar",
         data: {
           labels: nomes,
-          datasets: [{
-            label: "Horas",
-            data: horas
-          }]
+          datasets: [{ label: "Horas", data: horasPessoa }]
         },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              labels: { color: "white" }
-            }
+        options: getBarOptions()
+      });
+
+      graficoEtapas = new Chart(document.getElementById("graficoEtapas"), {
+        type: "bar",
+        data: {
+          labels: etapas,
+          datasets: [{ label: "Tarefas", data: tarefasEtapa }]
+        },
+        options: getBarOptions()
+      });
+
+      graficoTopTarefas = new Chart(document.getElementById("graficoTopTarefas"), {
+        type: "bar",
+        data: {
+          labels: topLabels,
+          datasets: [{ label: "Registros", data: topValores }]
+        },
+        options: getBarOptions()
+      });
+
+      graficoHorasEtapa = new Chart(document.getElementById("graficoHorasEtapa"), {
+        type: "bar",
+        data: {
+          labels: etapas,
+          datasets: [{ label: "Horas", data: horasEtapa }]
+        },
+        options: getBarOptions()
+      });
+    }
+
+    function getBarOptions() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: "white" } }
+        },
+        scales: {
+          x: {
+            ticks: { color: "white" },
+            grid: { color: "rgba(255,255,255,0.08)" }
           },
-          scales: {
-            x: {
-              ticks: { color: "white" },
-              grid: { color: "rgba(255,255,255,0.08)" }
-            },
-            y: {
-              beginAtZero: true,
-              ticks: { color: "white" },
-              grid: { color: "rgba(255,255,255,0.08)" }
-            }
+          y: {
+            beginAtZero: true,
+            ticks: { color: "white" },
+            grid: { color: "rgba(255,255,255,0.08)" }
           }
         }
-      });
+      };
     }
 
     document.getElementById("filtroEtapa").addEventListener("change", aplicarFiltros);
