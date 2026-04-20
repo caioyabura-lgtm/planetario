@@ -27,13 +27,13 @@
       justify-content: center;
       align-items: center;
       z-index: 2;
-      padding: 20px;
       text-align: center;
+      padding: 20px;
     }
 
     .eye {
       width: 350px;
-      max-width: 72vw;
+      max-width: 75vw;
       margin-bottom: 52.5px;
     }
 
@@ -71,6 +71,7 @@
 </head>
 
 <body>
+
   <div class="overlay">
     <img src="./olho.png" class="eye" alt="Olho">
     <h1>Vision Audiovisual</h1>
@@ -83,5 +84,33 @@
   </div>
 
   <script src="./main.js"></script>
+
+  <!-- MOBILE + MOVIMENTO AUTOMÁTICO -->
+  <script>
+    // toque simula mouse
+    window.addEventListener("touchmove", (e) => {
+      const touch = e.touches[0];
+
+      window.dispatchEvent(new MouseEvent("mousemove", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      }));
+    }, { passive: true });
+
+    // movimento automático leve
+    let autoX = window.innerWidth / 2;
+    let autoY = window.innerHeight / 2;
+
+    setInterval(() => {
+      autoX += (Math.random() - 0.5) * 50;
+      autoY += (Math.random() - 0.5) * 50;
+
+      window.dispatchEvent(new MouseEvent("mousemove", {
+        clientX: autoX,
+        clientY: autoY
+      }));
+    }, 2000);
+  </script>
+
 </body>
 </html>
